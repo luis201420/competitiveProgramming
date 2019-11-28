@@ -1,0 +1,40 @@
+private const val oneAsByte: Byte = 1
+private const val twoAsByte: Byte = 2
+private const val minusOneAsByte: Byte = -1
+
+private fun solve(input: Array<IntRange>): ByteArray {
+    val result = ByteArray(input.size) { index -> if (index == 0) oneAsByte else twoAsByte }
+    var groupRange = input[0]
+    do {
+        var changed = false
+        for (i in 0 until input.size) {
+            val range = input[i]
+            if (result[i] != oneAsByte &&
+                (groupRange.contains(range.start) || groupRange.contains(range.endInclusive) ||
+                        (range.start < groupRange.start &&
+                                range.endInclusive > groupRange.endInclusive))
+            ) {
+                groupRange = IntRange(
+                    minOf(range.start, groupRange.start),
+                    maxOf(range.endInclusive, groupRange.endInclusive)
+                )
+                result[i] = oneAsByte
+                changed = true
+            }
+        }
+    } while (changed)
+
+    return result.takeIf { it.contains(twoAsByte) } ?: byteArrayOf(minusOneAsByte)
+}
+
+fun main() {
+    for (i in 0 until readLine()!!.toInt()) {
+        println(
+            solve(Array(readLine()!!.toInt()) {
+                readLine()!!.split(' ', '\t').map(String::toInt).let {
+                    IntRange(it[0], it[1])
+                }
+            }).joinToString(" ")
+        )
+    }
+}
