@@ -1,0 +1,161 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+vector<string> ns;
+
+char toChar(int a){
+	return (a+48);
+}
+
+int toInt(char a){
+	return (a-48);
+}
+
+bool greaterM(string a,string b){
+	if(a.size()>b.size())return true;
+	else if(b.size()>a.size())return false;
+	else{
+		for(int i=0;i<a.size();i++){
+			if(toInt(a[i])<toInt(b[i]))return false;
+		}
+		return true;
+	}
+}
+
+string sumIntL(string a,string b,int c){
+	string r = "";
+	if(a.size()<b.size())swap(a,b);
+	b = string((a.size()-b.size()),'0')+b;
+	int acum=c,aux;
+	for(int i=a.size()-1;i>=0;i--){
+		aux = toInt(a[i])+toInt(b[i])+acum;
+		r = toChar(aux%10)+r;
+		acum = aux/10;
+	}
+	return toChar(acum)+r;
+}
+
+pair<int,string> sumIntR(string a,string b){
+	string r = "";
+	if(a.size()<b.size())swap(a,b);
+	b =b+string((a.size()-b.size()),'0');
+	int acum=0,aux;
+	for(int i=a.size()-1;i>=0;i--){
+		aux = toInt(a[i])+toInt(b[i])+acum;
+		r = toChar(aux%10)+r;
+		acum = aux/10;
+	}
+	return {acum,r};
+}
+
+string restIntL(string a,string b,int c){
+	string r = "";
+	if(greaterM(b,a))swap(a,b);
+	b = string((a.size()-b.size()),'0')+b;
+	int acum=c,aux,aa;
+	for(int i=a.size()-1;i>=0;i--){
+		aa = toInt(a[i])-acum;
+		acum=0;
+		if(aa < toInt(b[i])){
+			aa+=10;
+			acum=1;
+		}
+		aux = aa-toInt(b[i]);
+		r = toChar(aux%10)+r;
+	}
+	return r;
+}
+
+pair<int,string> restIntR(string a,string b){
+	string r = "";
+	b =b+string((a.size()-b.size()),'0');
+	int acum=0,aux,aa;
+	for(int i=a.size()-1;i>=0;i--){
+		aa = toInt(a[i])-acum;
+		acum=0;
+		if(aa < toInt(b[i])){
+			aa+=10;
+			acum=1;
+		}
+		aux = aa-toInt(b[i]);
+		r = toChar(aux%10)+r;
+	}
+	return {acum,r};
+}
+
+string sumFloat(string a,string b){
+	int i;
+	for(i=0;i<a.size();i++){
+		if(a[i]=='.')break;
+	}
+	string pai = (a[0]=='-')? a.substr(1,i-1):a.substr(0,i);
+	string pad = a.substr(i+1);
+	for(i=0;i<b.size();i++){
+		if(b[i]=='.')break;
+	}
+	string pbi = (b[0]=='-')? b.substr(1,i-1):b.substr(0,i);
+	string pbd = b.substr(i+1);
+	cerr << pai << " " << pad << endl;
+	cerr << pbi << " " << pbd << endl;
+	pair<int,string> r1 = sumIntR(pad,pbd);
+	string r2 = sumIntL(pai,pbi,r1.first);
+	return r2+"."+r1.second;
+}
+
+string restFloat(string a,string b){
+	int i;
+	for(i=0;i<a.size();i++){
+		if(a[i]=='.')break;
+	}
+	string pai = (a[0]=='-')? a.substr(1,i-1):a.substr(0,i);
+	string pad = a.substr(i+1);
+	for(i=0;i<b.size();i++){
+		if(b[i]=='.')break;
+	}
+	string pbi = (b[0]=='-')? b.substr(1,i-1):b.substr(0,i);
+	string pbd = b.substr(i+1);
+	cerr << pai << " " << pad << endl;
+	cerr << pbi << " " << pbd << endl;
+	pair<int,string> r1 = (greaterM(pai,pbi))?restIntR(pad,pbd) : restIntR(pbd,pad);
+	string r2 = restIntL(pai,pbi,r1.first);
+	return r2+"."+r1.second;
+}
+
+string calFloat(string a,string b){
+	string aux;
+	if((a[0]=='-' && b[0]=='-') || (a[0]!='-' && b[0]!='-')){
+		a=sumFloat(a,b);
+		if(a[0]=='-')a="-"+a;
+	}
+	else{
+		aux=a;
+		a=restFloat(a,b);
+	}
+	return a;
+}
+
+void sumAll(){
+	string ans=ns[0];
+	for(int i=1;i<ns.size();i++){
+		ans=calFloat(ans,ns[i]);
+	}
+	cerr << ans << endl;
+}
+
+int main(){
+	/*int t;
+	string s;
+	cin >> t;
+	while(t--){
+		while(cin >> s){
+			if(s=="0")break;
+			ns.push_back(s);
+		}
+		sumAll();
+		cout << ans << endl;
+		ns.clear();
+	}*/
+	cerr << restFloat("1.0","1.00")<< endl;
+	return 0;
+}
